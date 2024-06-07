@@ -28,7 +28,7 @@ sys.path.append(str(yolov5_path))
 sys.path.append(str(utils_path))
 
 # Path to your custom YOLOv5 model weights
-model_path = Path('models/bestbest.pt')
+model_path = Path('models/bestbestbest.pt')
 
 # Select device
 device = select_device('cpu')
