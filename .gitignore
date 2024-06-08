@@ -1,6 +1,8 @@
 # Ignore dataset and everything inside it
 /app/dataset/
 /dataset/
+/dataset/*
+/dataset/**/*
 dataset/
 dataset/*
 dataset

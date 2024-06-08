@@ -107,35 +107,62 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
         central_widget = QtWidgets.QWidget(self)
         self.setCentralWidget(central_widget)
 
-        self.grid_layout = QtWidgets.QGridLayout(central_widget)
+        # Main layout
+        main_layout = QtWidgets.QHBoxLayout(central_widget)
+
+        # Left sidebar layout for camera list
+        left_sidebar_layout = QtWidgets.QVBoxLayout()
 
         self.status_label = QtWidgets.QLabel(self)
         self.status_label.setText("Status: Not connected")
-        self.grid_layout.addWidget(self.status_label, 0, 0)
+        left_sidebar_layout.addWidget(self.status_label)
+
+        self.camera_list = QtWidgets.QListWidget(self)
+        left_sidebar_layout.addWidget(self.camera_list)
+        self.camera_list.itemClicked.connect(self.select_camera)
+
+        # Add left sidebar to main layout
+        main_layout.addLayout(left_sidebar_layout)
+
+        # Middle layout for video placeholder and buttons
+        middle_layout = QtWidgets.QVBoxLayout()
 
         self.video_label = QtWidgets.QLabel(self)
-        self.grid_layout.addWidget(self.video_label, 1, 0)
+        # Set a fixed size for the video placeholder
+        self.video_label.setFixedSize(640, 640)
+        # Optional: Set a background color for better visibility
+        self.video_label.setStyleSheet("background-color: grey;")
+        middle_layout.addWidget(
+            self.video_label, alignment=QtCore.Qt.AlignCenter)
+
+        # Buttons layout under the video placeholder
+        buttons_layout = QtWidgets.QHBoxLayout()
 
         self.start_button = QtWidgets.QPushButton('Start', self)
         self.start_button.clicked.connect(self.start_streaming)
-        self.grid_layout.addWidget(self.start_button, 2, 0)
+        buttons_layout.addWidget(self.start_button)
 
         self.stop_button = QtWidgets.QPushButton('Stop', self)
         self.stop_button.clicked.connect(self.stop_streaming)
-        self.grid_layout.addWidget(self.stop_button, 2, 1)
+        buttons_layout.addWidget(self.stop_button)
 
         self.add_camera_button = QtWidgets.QPushButton('Add Camera', self)
         self.add_camera_button.clicked.connect(self.add_camera)
-        self.grid_layout.addWidget(self.add_camera_button, 3, 0)
+        buttons_layout.addWidget(self.add_camera_button)
 
         self.delete_camera_button = QtWidgets.QPushButton(
             'Delete Camera', self)
         self.delete_camera_button.clicked.connect(self.delete_camera)
-        self.grid_layout.addWidget(self.delete_camera_button, 3, 1)
+        buttons_layout.addWidget(self.delete_camera_button)
 
-        self.camera_list = QtWidgets.QListWidget(self)
-        self.grid_layout.addWidget(self.camera_list, 1, 1, 2, 1)
-        self.camera_list.itemClicked.connect(self.select_camera)
+        self.stop_alarm_button = QtWidgets.QPushButton('Stop Alarm', self)
+        buttons_layout.addWidget(self.stop_alarm_button)
+
+        # Add buttons layout to middle layout
+        middle_layout.addLayout(buttons_layout)
+
+        # Add middle layout to main layout
+        main_layout.addLayout(middle_layout)
 
         self.load_camera_config()
         self.show()
@@ -191,9 +218,12 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
         response = confirm_dialog.exec_()
         if response == QtWidgets.QMessageBox.Yes:
             for item in selected_items:
-                del self.cameras[item.text()]
+                del self.cameras[item.text().split(':')[0]]
                 self.camera_list.takeItem(self.camera_list.row(item))
             self.save_camera_config()
+            self.stop_streaming()
+            # Clear the video label
+            self.video_label.clear()
 
     def select_camera(self, item):
         self.current_camera_label = item.text().split(':')[0]
@@ -251,7 +281,7 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                     # Resize frame to a lower resolution
-                    target_size = (320, 320)
+                    target_size = (640, 640)
                     resized_frame = cv2.resize(frame_rgb, target_size)
 
                     # Convert frame to a torch tensor
@@ -343,8 +373,10 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
             self.alert_sound.play()
             # Additional actions (logging, sending alerts, etc.) can be added here
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.log_event(f'Fire detected! image link: logs/images/frame_{timestamp}.jpg')
-            cv2.imwrite(f'logs/images/frame_{timestamp}.jpg', self.processed_frame)
+            self.log_event(
+                f'Fire detected! image link: logs/images/frame_{timestamp}.jpg')
+            cv2.imwrite(
+                f'logs/images/frame_{timestamp}.jpg', self.processed_frame)
             # Send alert
             self.show_alert("Fire detected!")
 
