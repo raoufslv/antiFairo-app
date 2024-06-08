@@ -95,6 +95,10 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
             os.makedirs('dataset/labels')
         if not os.path.exists('dataset/predicts'):
             os.makedirs('dataset/predicts')
+        if not os.path.exists('logs'):
+            os.makedirs('logs')
+        if not os.path.exists('logs/images'):
+            os.makedirs('logs/images')
 
     def initUI(self):
         self.setWindowTitle('Fire and Smoke Detection')

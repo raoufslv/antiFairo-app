@@ -1,2 +1,29 @@
-yolov5/
-dataset/*
+# Ignore dataset and everything inside it
+/dataset/
+
+# Ignore yolov5 and everything inside it
+/yolov5/
+
+# Logs and other files that should not be committed
+/logs/
+/logs/*
+*.log
+
+# Compiled Python files
+__pycache__/
+*.py[cod]
+
+# Ignore archive files
+/archive/*.pyc
+/archive/*.pyo
+/archive/*~
+
+# Ignore any macOS system files
+.DS_Store
+
+# Ignore environment files
+.env
+
+# Ignore virtual environment directories
+venv/
+env/
