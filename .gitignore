@@ -1,27 +1,30 @@
 # Ignore dataset and everything inside it
+/app/dataset/
 /dataset/
 dataset/
 dataset/*
 dataset
 
-
 # Ignore yolov5 and everything inside it
+/app/yolov5/
 /yolov5/
 
 # Logs and other files that should not be committed
+/app/logs/
+/app/logs/*
+*.log
 logs
 /logs/
 /logs/*
-*.log
 
 # Compiled Python files
 __pycache__/
 *.py[cod]
 
 # Ignore archive files
-/archive/*.pyc
-/archive/*.pyo
-/archive/*~
+/app/archive/*.pyc
+/app/archive/*.pyo
+/app/archive/*~
 
 # Ignore any macOS system files
 .DS_Store
