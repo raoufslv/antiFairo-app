@@ -1,10 +1,15 @@
 # Ignore dataset and everything inside it
 /dataset/
+dataset/
+dataset/*
+dataset
+
 
 # Ignore yolov5 and everything inside it
 /yolov5/
 
 # Logs and other files that should not be committed
+logs
 /logs/
 /logs/*
 *.log

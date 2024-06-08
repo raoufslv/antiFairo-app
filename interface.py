@@ -342,8 +342,8 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
             self.alert_sound.setLoops(QSound.Infinite)
             self.alert_sound.play()
             # Additional actions (logging, sending alerts, etc.) can be added here
-            self.log_event("Fire detected! File logs")
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.log_event(f'Fire detected! image link: logs/images/frame_{timestamp}.jpg')
             cv2.imwrite(f'logs/images/frame_{timestamp}.jpg', self.processed_frame)
             # Send alert
             self.show_alert("Fire detected!")
