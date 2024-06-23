@@ -28,7 +28,7 @@ sys.path.append(str(yolov5_path))
 sys.path.append(str(utils_path))
 
 # Path to your custom YOLOv5 model weights
-model_path = Path('models/bestbestbest.pt')
+model_path = Path('models/best-own-dataset.pt')
 
 # Select device
 device = select_device('cpu')
@@ -43,8 +43,8 @@ except Exception as e:
     sys.exit(1)
 
 # Define confidence thresholds for fire and smoke classes
-fire_conf_threshold = 0.7  # Adjust as needed
-smoke_conf_threshold = 0.7  # Adjust as needed
+fire_conf_threshold = 0.2  # Adjust as needed
+smoke_conf_threshold = 0.2  # Adjust as needed
 
 
 class FireSmokeDetectorApp(QtWidgets.QMainWindow):
@@ -129,7 +129,7 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
 
         self.video_label = QtWidgets.QLabel(self)
         # Set a fixed size for the video placeholder
-        self.video_label.setFixedSize(640, 640)
+        self.video_label.setFixedSize(320, 320)
         # Optional: Set a background color for better visibility
         self.video_label.setStyleSheet("background-color: grey;")
         middle_layout.addWidget(
@@ -281,7 +281,7 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                     # Resize frame to a lower resolution
-                    target_size = (640, 640)
+                    target_size = (320, 320)
                     resized_frame = cv2.resize(frame_rgb, target_size)
 
                     # Convert frame to a torch tensor
