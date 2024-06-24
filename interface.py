@@ -81,7 +81,7 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
         self.smoke_detected = False
         self.fire_frame_count = 0
         self.smoke_frame_count = 0
-        self.consistent_detection_threshold = 5  # Adjust as needed
+        self.consistent_detection_threshold = 7  # Adjust as needed
 
         self.fire_detected_signal.connect(
             self.handle_fire_detection)  # Connect signal to slot

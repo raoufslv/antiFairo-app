@@ -1,5 +1,5 @@
 {
   "laptop": 0,
-  "issam's phone": "rtsp://192.168.171.188:1935/",
-  "raouf's phone": "rtsp://192.168.171.188:8080/h264_ulaw.sdp"
+  "issam_camera": "rtsp://192.168.250.31:1935/",
+  "raouf_camera": "rtsp://192.168.250.108:1935/"
 }
