@@ -31,6 +31,7 @@ sys.path.append(str(utils_path))
 # Path to your custom YOLOv5 model weights
 model_path = Path('models/EfficientDet200.pt')
 
+
 # Select device
 device = select_device('cpu')
 
@@ -44,8 +45,8 @@ except Exception as e:
     sys.exit(1)
 
 # Define confidence thresholds for fire and smoke classes
-fire_conf_threshold = 0.6  # Adjust as needed
-smoke_conf_threshold = 0.6  # Adjust as needed
+fire_conf_threshold = 0.35  # Adjust as needed
+smoke_conf_threshold = 0.35  # Adjust as needed
 
 # Define ALERT VARIABLE GLOBAL
 ALERT_GLOBAL = False
@@ -93,13 +94,14 @@ class CameraStream(QThread):
         self.smoke_detected = False
         self.fire_frame_count = 0
         self.smoke_frame_count = 0
-        self.consistent_detection_threshold = 7  # Adjust as needed
+        self.consistent_detection_threshold = 4  # Adjust as needed
 
     def run(self):
-        if not self.open_camera_with_timeout(self.rtsp_url, timeout=15):
+        if not self.open_camera_with_timeout(self.rtsp_url, timeout=10):
             self.connection_failed.emit(self.camera_label)
             return
 
+        self.connection_success.emit(self.camera_label)
         # Start processing frames
         self.process_frames()
 
@@ -304,7 +306,8 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
 
         self.video_label = QtWidgets.QLabel(self)
         self.video_label.setFixedSize(320, 320)
-        self.video_label.setStyleSheet("background-color: grey;")
+        self.video_label.setStyleSheet("background-color: grey; color: white; font-weight: bold;")
+        self.video_label.setAlignment(QtCore.Qt.AlignCenter)  # Ensure text is centered
         middle_layout.addWidget(self.video_label, alignment=Qt.AlignCenter)
 
         buttons_layout = QtWidgets.QHBoxLayout()
@@ -431,10 +434,7 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
         stream = CameraStream(self.current_camera_label,
                               self.cameras[self.current_camera_label])
         stream.frame_received.connect(self.update_frame)
-        stream.connection_success.connect(
-            # Update the icon to green (connected) and update the status
-            lambda: self.update_camera_icon(
-                self.current_camera_label, self.green_bullet))
+        stream.connection_success.connect(self.camera_started)
 
         stream.connection_failed.connect(self.handle_connection_failure)
         stream.fire_detected_signal.connect(self.show_alert)
@@ -442,11 +442,22 @@ class FireSmokeDetectorApp(QtWidgets.QMainWindow):
         stream.start()
         self.streams[self.current_camera_label] = stream
 
+    def camera_started(self, camera_label):
+        self.status_label.setText(f"Status: Connected to {camera_label}")
+        # Update the icon to green (connected)
+        self.update_camera_icon(camera_label, self.green_bullet)
+        # make it the one selected and start streaming it
+        self.current_camera_label = camera_label
+        self.start_streaming()
+
     def update_label_bg(self, label_camera):
         for index in range(self.camera_list.count()):
             item = self.camera_list.item(index)
             if item.text().startswith(label_camera):
                 item.setBackground(QtGui.QColor(255, 0, 0, 50))
+                # make it the one selected and start streaming it
+                self.current_camera_label = label_camera
+                self.start_streaming()
                 break
 
     def stop_streaming(self):
